@@ -1,38 +1,59 @@
-Role Name
-=========
+# Docker Role
 
-A brief description of the role goes here.
+An Ansible role to install and configure Docker on Debian-based systems.
 
-Requirements
-------------
+## Requirements
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+- The target system must be Debian-based (e.g., Ubuntu).
+- Ansible must be installed on the control node.
+- Internet access is required on the target system to add the Docker repository and download packages.
 
-Role Variables
---------------
+## Role Variables
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+The following variables can be customized to configure the role:
 
-Dependencies
-------------
+- `docker_repo_url`: The base URL for the official Docker GPG key.
+  - Default: `https://download.docker.com/linux/debian`
+- `docker_repo`: The APT repository for Docker.
+  - Default: `"deb [arch=amd64] https://download.docker.com/linux/debian $(lsb_release -cs) stable"`
+- `docker_packages`: A list of Docker-related packages to install.
+  - Default: 
+    ```yaml
+    docker_packages:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+    ```
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+## Dependencies
 
-Example Playbook
-----------------
+This role has no external dependencies.
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
+## Example Playbook
 
-    - hosts: servers
-      roles:
-         - { role: username.rolename, x: 42 }
+Below is an example of how to use the role in your playbook:
 
-License
--------
+```yaml
+- name: Install and configure Docker
+  hosts: servers
+  become: true
+  vars:
+    docker_repo_url: "https://download.docker.com/linux/ubuntu"
+    docker_repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+    docker_packages:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+  roles:
+    - docker
+```
 
-BSD
+## Tasks
 
-Author Information
-------------------
+This role performs the following tasks:
 
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+1. Installs required APT packages for Docker.
+2. Adds Docker's official GPG key.
+3. Adds Docker's APT repository.
+4. Installs Docker packages.
+5. Ensures the Docker service is running and enabled at startup.
